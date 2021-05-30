@@ -6,6 +6,6 @@ g_conf = {
         "password": "123456"
     },
     "log": {
-        "log_path": "./test_result.log"
+        "log_path": ""
     }
 }

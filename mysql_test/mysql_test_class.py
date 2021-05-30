@@ -10,7 +10,7 @@ class MysqlTest:
     CREATE_DB = "CREATE DATABASE IF NOT EXISTS %s;" % DB_NAME
     USE_DB = "USE %s;" % DB_NAME
     CREATE_TB = "CREATE TABLE IF NOT EXISTS %s(%s);" % (TB_NAME, TB_PARAMS)
-    DB_D = None
+    DB_D: MysqlDao = None
 
     @staticmethod
     def init():
@@ -23,8 +23,8 @@ class MysqlTest:
         db.execute(MysqlTest.DROP_DB)
         db.execute(MysqlTest.CREATE_DB)
         db.execute_many([MysqlTest.USE_DB, MysqlTest.CREATE_TB])
-        db.execute("show engines;")
-        db.execute(" show variables like '%storage_engine%';")  # 查看当前默认存储引擎
+        # db.execute("show engines;")
+        # db.execute(" show variables like '%storage_engine%';")  # 查看当前默认存储引擎
 
         MysqlTest.DB_D = db
 
@@ -40,14 +40,21 @@ class MysqlTest:
 
     @staticmethod
     def insert_test():
-        MysqlTest.insert(1, "1")
-        MysqlTest.insert(2, "2")
-        MysqlTest.insert(3, "3")
+        MysqlTest.insert(id=1, name="1")
+        MysqlTest.insert(id=2, name="2")
+        MysqlTest.insert(id=3, name="3")
 
     @staticmethod
     def query_test():
         MysqlTest.query_all()
 
     @staticmethod
-    def test1():  # 验证事务隔离级别
-        pass
+    def tran_test1():  # 事务四大特性 AICD
+        sql = f"INSERT INTO {MysqlTest.DB_NAME}.{MysqlTest.TB_NAME}(id, name) VALUES(1, 1);"
+        try:
+            MysqlTest.DB_D.execute_tran(sql)
+        except Exception as e:
+            MysqlTest.DB_D.tran_rollback()
+        finally:
+            MysqlTest.DB_D.tran_commit()
+
